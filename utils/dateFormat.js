@@ -71,7 +71,7 @@ module.exports = (
 
   let hour;
   // check for 24-hr time
-  if (dateObj.getHours > 12) {
+  if (dateObj.getHours() > 12) {
     hour = Math.floor(dateObj.getHours() / 2);
   } else {
     hour = dateObj.getHours();
@@ -81,7 +81,11 @@ module.exports = (
     hour = 12;
   }
 
-  const minutes = dateObj.getMinutes();
+  let minutes = dateObj.getMinutes();
+  // check if minutes needs a 0 in front of it
+  if (minutes < 10) {
+    minutes = '0' + minutes;
+  };
 
   // set `am` or `pm`
   let periodOfDay;
