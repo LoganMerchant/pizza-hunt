@@ -21,7 +21,7 @@ const commentController = {
 
                 res.json(dbPizzaData);
             })
-            .catch(err => res.status(400).json(err));
+            .catch(err => res.json(err));
     },
     // add a reply to a comment
     createReply({ params, body }, res) {
