@@ -11,7 +11,10 @@ let pizzaId;
 
 function getPizza() {
   // Gets id of pizza from URL
+    // Returns `id=5fc47ddf12f4bb4a25e45213` from...
+    // http://localhost:3001/pizza?id=5fc47ddf12f4bb4a25e45213
   const searchParams = new URLSearchParams(document.location.search.substring(1));
+    // Gets the id value...returning `5fc47ddf12f4bb4a25e45213`
   const pizzaId = searchParams.get('id');
 
   fetch(`/api/pizzas/${pizzaId}`)
