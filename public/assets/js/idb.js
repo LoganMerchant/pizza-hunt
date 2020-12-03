@@ -23,7 +23,7 @@ request.onsuccess = function (event) {
 
   // check if app is online, if yes run uploadPizza() function to send all local db data to api
   if (navigator.onLine) {
-    // uploadPizza():
+    uploadPizza();
   }
 };
 
@@ -43,3 +43,50 @@ function saveRecord(record) {
   // add record to your store with add method
   pizzaObjectStore.add(record);
 }
+
+function uploadPizza() {
+  // open a transaction on the db
+  const transaction = db.transaction(["new_pizza"], "readwrite");
+
+  // acces the object store
+  const pizzaObjectStore = transaction.objectStore("new_pizza");
+
+  // get all records from store and set to a variable
+  const getAll = pizzaObjectStore.getAll();
+
+  // upon a successful getAll(), run this
+  getAll.onsuccess = function () {
+    // if there was data in indexedDB's store, send it to the api server
+    if (getAll.result.length > 0) {
+      fetch(`/api/pizzas`, {
+        method: "POST",
+        body: JSON.stringify(getAll.result),
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((serverResponse) => {
+          if (serverResponse.message) {
+            throw new Error(serverResponse);
+          };
+
+          // open one more transactions
+          const transaction = db.transaction(["new_pizza"], "readwrite");
+          // acces the new_pizza object store
+          const pizzaObjectStore = transaction.objectStore("new_pizza");
+          // clear all items in the store
+          pizzaObjectStore.clear();
+
+          alert("All saved pizza has been submitted!");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+}
+
+// listen for the app coming back online
+window.addEventListener('online', uploadPizza);
